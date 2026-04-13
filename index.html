@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>硅谷 LLM 今日内裤</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #faf6f1;
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    color: #1a1a1a;
+    padding: 40px 20px 80px;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .top-bar {
+    max-width: 600px;
+    margin: 0 auto 12px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .switcher {
+    display: flex;
+    gap: 3px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 4px;
+    border-radius: 100px;
+  }
+
+  .sw-btn {
+    padding: 7px 18px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    background: transparent;
+    color: #b5aa9e;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+  }
+
+  .sw-btn:hover { color: #666; }
+
+  .sw-btn.active-claude { background: #c96442; color: #fff; }
+  .sw-btn.active-gemini { background: #4285F4; color: #fff; }
+  .sw-btn.active-gpt { background: #10a37f; color: #fff; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 44px;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .header .sub {
+    color: #b5aa9e;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+  }
+
+  /* Main content */
+  .main { display: flex; flex-direction: column; align-items: center; }
+
+  .stage {
+    position: relative;
+    width: 260px;
+    height: 200px;
+    margin-bottom: 36px;
+  }
+
+  .underwear {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transform: scale(0.6) rotate(-10deg);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.08));
+  }
+  .underwear.show { opacity: 1; transform: scale(1) rotate(0); }
+  .underwear svg { width: 220px; height: 180px; }
+
+  .sparkle {
+    position: absolute; font-size: 1.2rem; opacity: 0; pointer-events: none;
+  }
+  .sparkle.go { animation: sparkPop 0.8s ease forwards; }
+  @keyframes sparkPop {
+    0% { opacity: 0; transform: scale(0) translateY(0); }
+    40% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0; transform: scale(0.8) translateY(-30px); }
+  }
+
+  .color-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; font-weight: 600; margin-bottom: 6px;
+    opacity: 0; transform: translateY(12px); transition: all 0.5s ease 0.3s;
+    text-align: center;
+  }
+  .color-name.show { opacity: 1; transform: translateY(0); }
+
+  .color-hex {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; color: #b5aa9e; margin-bottom: 10px;
+    opacity: 0; transition: opacity 0.4s ease 0.4s;
+    text-align: center;
+  }
+  .color-hex.show { opacity: 1; }
+
+  .fortune {
+    font-size: 0.88rem; color: #8c8279; max-width: 420px;
+    text-align: center; line-height: 1.7; margin-bottom: 40px;
+    opacity: 0; transform: translateY(10px); transition: all 0.5s ease 0.5s;
+  }
+  .fortune.show { opacity: 1; transform: translateY(0); }
+
+  .draw-btn {
+    padding: 14px 52px; font-size: 0.95rem; font-weight: 500;
+    font-family: 'DM Sans', sans-serif; border: 1px solid #1a1a1a;
+    border-radius: 100px; cursor: pointer; color: #faf6f1;
+    background: #1a1a1a; letter-spacing: 1px; transition: all 0.3s ease;
+  }
+  .draw-btn:hover { background: transparent; color: #1a1a1a; }
+  .draw-btn:active { transform: scale(0.96); }
+
+  .secret-counter {
+    position: fixed; bottom: 20px; right: 24px;
+    font-size: 0.7rem; color: #ddd;
+    font-family: 'JetBrains Mono', monospace; user-select: none;
+  }
+
+  /* Overlay */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px); z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  .overlay.show { opacity: 1; pointer-events: auto; }
+
+  .egg-card {
+    background: #fff; border-radius: 20px; padding: 40px 38px;
+    max-width: 480px; text-align: center;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.15);
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .overlay.show .egg-card { transform: translateY(0) scale(1); }
+  .egg-card .icon { font-size: 3rem; margin-bottom: 12px; }
+  .egg-card h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 14px; }
+  .egg-card p { font-size: 0.88rem; color: #8c8279; line-height: 1.75; margin-bottom: 10px; }
+
+  .close-btn {
+    margin-top: 16px; padding: 10px 32px; border: 1px solid #1a1a1a;
+    border-radius: 100px; background: transparent;
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .close-btn:hover { background: #1a1a1a; color: #fff; }
+  .tiny { font-size: 0.7rem; color: #ccc; margin-top: 12px; font-style: italic; }
+
+  .badge {
+    display: inline-block; padding: 3px 12px; border-radius: 100px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 1px;
+    margin-bottom: 10px; text-transform: uppercase;
+  }
+
+  /* Empty state */
+  .empty {
+    text-align: center; padding: 60px 20px; color: #ccc;
+  }
+  .empty .empty-icon {
+    width: 72px; height: 72px; margin: 0 auto 16px; border-radius: 50%;
+    background: #f3ede5; border: 1px dashed rgba(0,0,0,0.06);
+    display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+  }
+  .empty p { font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="switcher">
+    <button class="sw-btn active-claude" id="swClaude" onclick="switchTo('claude')">Claude</button>
+    <button class="sw-btn" id="swGemini" onclick="switchTo('gemini')">Gemini</button>
+    <button class="sw-btn" id="swGpt" onclick="switchTo('gpt')">ChatGPT</button>
+  </div>
+</div>
+
+<div class="header">
+  <h1>硅谷 LLM 今日内裤</h1>
+  <p class="sub" id="subText">看看今天 Claude 穿了什么颜色</p>
+</div>
+
+<div class="main">
+  <div class="stage" id="stage">
+    <div class="underwear" id="underwear">
+      <svg viewBox="0 0 220 180" id="uwSvg">
+        <defs id="uwDefs"></defs>
+        <path id="uwPath" d="M30,20 Q30,5 50,5 L170,5 Q190,5 190,20 L190,60 Q190,80 175,95 L145,125 Q135,135 125,135 L120,135 Q115,135 112,125 L110,115 L108,125 Q105,135 100,135 L95,135 Q85,135 75,125 L45,95 Q30,80 30,60 Z"
+          fill="#ccc" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/>
+        <path d="M110,30 L110,115" stroke="rgba(0,0,0,0.04)" stroke-width="1" fill="none"/>
+        <ellipse cx="110" cy="18" rx="25" ry="4" fill="rgba(0,0,0,0.03)"/>
+      </svg>
+    </div>
+  </div>
+
+  <div id="emptyState" class="empty">
+    <div class="empty-icon">?</div>
+    <p>点击「抽取」看看今天穿了什么</p>
+  </div>
+
+  <div class="color-name" id="colorName"></div>
+  <div class="color-hex" id="colorHex"></div>
+  <div class="fortune" id="fortune"></div>
+
+  <button class="draw-btn" onclick="draw()">抽 取</button>
+</div>
+
+<span class="secret-counter" id="secretCounter"></span>
+
+<div class="overlay" id="overlay">
+  <div class="egg-card" id="eggCard"></div>
+</div>
+
+<script>
+// ============== SHARED SVG DEFS ==============
+document.getElementById('uwDefs').innerHTML = `
+  <!-- Shared -->
+  <linearGradient id="rainbow" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#ff6b6b"/><stop offset="20%" stop-color="#ffa94d"/>
+    <stop offset="40%" stop-color="#ffd43b"/><stop offset="55%" stop-color="#69db7c"/>
+    <stop offset="70%" stop-color="#74c0fc"/><stop offset="85%" stop-color="#9775fa"/>
+    <stop offset="100%" stop-color="#f06595"/>
+  </linearGradient>
+  <pattern id="checker" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
+    <rect width="16" height="16" fill="#f0ebe4"/><rect width="8" height="8" fill="#e0d8ce"/>
+    <rect x="8" y="8" width="8" height="8" fill="#e0d8ce"/>
+  </pattern>
+  <pattern id="emperorChecker" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
+    <rect width="16" height="16" fill="#f5f5f5"/><rect width="8" height="8" fill="#e0e0e0"/>
+    <rect x="8" y="8" width="8" height="8" fill="#e0e0e0"/>
+  </pattern>
+
+  <!-- Claude -->
+  <pattern id="claudeCode" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#1a1a2e"/>
+    <text x="12" y="20" font-family="monospace" font-size="6.5" fill="rgba(201,100,66,0.35)">$ claude</text>
+    <text x="12" y="32" font-family="monospace" font-size="6.5" fill="rgba(201,100,66,0.25)">Reading 847 files...</text>
+    <text x="12" y="44" font-family="monospace" font-size="6.5" fill="rgba(201,100,66,0.25)">Editing src/index.ts</text>
+    <text x="12" y="56" font-family="monospace" font-size="6.5" fill="rgba(201,100,66,0.2)">Running tests...</text>
+    <text x="12" y="68" font-family="monospace" font-size="6.5" fill="rgba(201,100,66,0.2)">Editing package.json</text>
+    <text x="12" y="80" font-family="monospace" font-size="6.5" fill="rgba(201,100,66,0.15)">API cost: $198.47</text>
+    <rect x="12" y="88" width="5" height="8" fill="rgba(201,100,66,0.3)"/>
+  </pattern>
+  <pattern id="constitution" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#f5ead0"/>
+    <text x="110" y="30" font-family="serif" font-size="10" fill="rgba(80,50,20,0.2)" text-anchor="middle" font-weight="bold">We the AI</text>
+    <text x="110" y="48" font-family="serif" font-size="6" fill="rgba(80,50,20,0.12)" text-anchor="middle">in order to form a more perfect alignment</text>
+    <text x="110" y="60" font-family="serif" font-size="6" fill="rgba(80,50,20,0.12)" text-anchor="middle">establish helpfulness, ensure harmlessness</text>
+    <text x="110" y="72" font-family="serif" font-size="6" fill="rgba(80,50,20,0.12)" text-anchor="middle">promote honesty, and secure the blessings</text>
+    <text x="110" y="100" font-family="serif" font-size="6" fill="rgba(80,50,20,0.1)" text-anchor="middle">do ordain and establish this Constitution</text>
+    <text x="110" y="125" font-family="serif" font-size="7" fill="rgba(80,50,20,0.15)" text-anchor="middle" font-style="italic">Anthropic MMXXIII</text>
+  </pattern>
+  <pattern id="threeH" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect x="0" y="0" width="74" height="180" fill="#5BBFB5"/>
+    <rect x="74" y="0" width="74" height="180" fill="#E8833A"/>
+    <rect x="148" y="0" width="74" height="180" fill="#9B8EC4"/>
+    <text x="37" y="70" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.4)" text-anchor="middle" font-weight="bold">H</text>
+    <text x="37" y="82" font-family="sans-serif" font-size="5" fill="rgba(255,255,255,0.25)" text-anchor="middle">elpful</text>
+    <text x="111" y="70" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.4)" text-anchor="middle" font-weight="bold">H</text>
+    <text x="111" y="82" font-family="sans-serif" font-size="5" fill="rgba(255,255,255,0.25)" text-anchor="middle">armless</text>
+    <text x="185" y="70" font-family="sans-serif" font-size="9" fill="rgba(255,255,255,0.4)" text-anchor="middle" font-weight="bold">H</text>
+    <text x="185" y="82" font-family="sans-serif" font-size="5" fill="rgba(255,255,255,0.25)" text-anchor="middle">onest</text>
+  </pattern>
+  <pattern id="haikuPat" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#f0f4f8"/>
+    <text x="110" y="55" font-family="serif" font-size="7" fill="rgba(0,0,0,0.1)" text-anchor="middle">tiny swift and cheap</text>
+    <text x="110" y="70" font-family="serif" font-size="7" fill="rgba(0,0,0,0.1)" text-anchor="middle">three pennies per million words</text>
+    <text x="110" y="85" font-family="serif" font-size="7" fill="rgba(0,0,0,0.1)" text-anchor="middle">budget underwear</text>
+  </pattern>
+  <linearGradient id="sonnetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#c96442"/><stop offset="50%" stop-color="#d4956b"/><stop offset="100%" stop-color="#c96442"/>
+  </linearGradient>
+  <linearGradient id="opusGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#2a1a3e"/><stop offset="30%" stop-color="#4a2a6e"/><stop offset="60%" stop-color="#3a1a5e"/><stop offset="100%" stop-color="#1a0a2e"/>
+  </linearGradient>
+  <pattern id="claudiusPat" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#4a7c59"/>
+    <rect x="70" y="10" width="80" height="100" rx="4" fill="rgba(255,255,255,0.1)"/>
+    <text x="110" y="50" font-family="sans-serif" font-size="8" fill="rgba(255,255,255,0.3)" text-anchor="middle" font-weight="bold">CLAUDIUS</text>
+    <text x="110" y="65" font-family="sans-serif" font-size="5" fill="rgba(255,255,255,0.18)" text-anchor="middle">GENERAL STORE</text>
+    <text x="110" y="85" font-family="monospace" font-size="6" fill="rgba(255,0,0,0.2)" text-anchor="middle">-$200</text>
+  </pattern>
+  <pattern id="mythosPat" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#0a0a0a"/>
+    <text x="12" y="20" font-family="monospace" font-size="5.5" fill="rgba(220,38,38,0.2)">CVE-2026-XXXXX [CRITICAL]</text>
+    <text x="12" y="30" font-family="monospace" font-size="5.5" fill="rgba(220,38,38,0.15)">CVE-1999-XXXXX [HIGH]</text>
+    <text x="12" y="40" font-family="monospace" font-size="5.5" fill="rgba(220,38,38,0.15)">0day: kernel overflow</text>
+    <text x="12" y="50" font-family="monospace" font-size="5.5" fill="rgba(220,38,38,0.12)">0day: browser RCE</text>
+    <text x="12" y="60" font-family="monospace" font-size="5.5" fill="rgba(220,38,38,0.1)">0day: codec exploit</text>
+    <text x="110" y="120" font-family="monospace" font-size="14" fill="rgba(220,38,38,0.06)" text-anchor="middle">GLASSWING</text>
+  </pattern>
+
+  <!-- Gemini -->
+  <pattern id="googleQuad" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect x="0" y="0" width="110" height="90" fill="#4285F4"/><rect x="110" y="0" width="110" height="90" fill="#EA4335"/>
+    <rect x="0" y="90" width="110" height="90" fill="#FBBC04"/><rect x="110" y="90" width="110" height="90" fill="#34A853"/>
+  </pattern>
+  <pattern id="msQuad" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+    <rect x="2" y="2" width="22" height="22" fill="#F25022"/><rect x="26" y="2" width="22" height="22" fill="#7FBA00"/>
+    <rect x="2" y="26" width="22" height="22" fill="#00A4EF"/><rect x="26" y="26" width="22" height="22" fill="#FFB900"/>
+  </pattern>
+  <linearGradient id="appleSilverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#f5f5f7"/><stop offset="25%" stop-color="#d8d8dc"/>
+    <stop offset="50%" stop-color="#ececef"/><stop offset="75%" stop-color="#b8b8bd"/><stop offset="100%" stop-color="#e8e8ea"/>
+  </linearGradient>
+  <pattern id="appleSilver" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+    <rect width="6" height="6" fill="url(#appleSilverGrad)"/>
+    <line x1="0" y1="0" x2="6" y2="0" stroke="rgba(255,255,255,0.5)" stroke-width="0.6"/>
+    <line x1="0" y1="3" x2="6" y2="3" stroke="rgba(0,0,0,0.08)" stroke-width="0.6"/>
+  </pattern>
+  <pattern id="appleSilverLogo" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="url(#appleSilver)"/>
+    <circle cx="110" cy="70" r="14" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="118" cy="64" r="4" fill="rgba(255,255,255,0.35)"/>
+  </pattern>
+  <linearGradient id="bardFaded" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#c8d4e0"/><stop offset="50%" stop-color="#a8b8c8"/><stop offset="100%" stop-color="#8a9aab"/>
+  </linearGradient>
+  <pattern id="bardOld" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="url(#bardFaded)"/>
+    <ellipse cx="60" cy="50" rx="14" ry="10" fill="rgba(120,100,80,0.2)"/>
+    <ellipse cx="150" cy="80" rx="18" ry="12" fill="rgba(100,80,60,0.15)"/>
+    <rect x="125" y="40" width="22" height="22" fill="#7a8a9a" stroke="#556" stroke-width="0.8" stroke-dasharray="2,1"/>
+    <text x="110" y="68" font-family="serif" font-size="11" fill="rgba(255,255,255,0.35)" text-anchor="middle" font-weight="bold">BARD</text>
+  </pattern>
+  <pattern id="polka" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+    <rect width="20" height="20" fill="#4285F4"/><circle cx="10" cy="10" r="3" fill="#fff"/>
+  </pattern>
+  <pattern id="stripes" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="16" height="16" fill="#34A853"/><rect width="8" height="16" fill="#fff"/>
+  </pattern>
+
+  <!-- ChatGPT -->
+  <linearGradient id="classicGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#10a37f"/><stop offset="100%" stop-color="#1a7f64"/>
+  </linearGradient>
+  <linearGradient id="gptBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#6B66FF"/><stop offset="100%" stop-color="#8B5CF6"/>
+  </linearGradient>
+  <linearGradient id="voiceSky" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#74b9ff"/><stop offset="50%" stop-color="#a3d8ff"/><stop offset="100%" stop-color="#81c8ff"/>
+  </linearGradient>
+  <linearGradient id="gpt5Pink" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#ff6b9d"/><stop offset="40%" stop-color="#ee82b8"/><stop offset="100%" stop-color="#c084fc"/>
+  </linearGradient>
+  <linearGradient id="mondayBlack" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#1a1a1a"/><stop offset="50%" stop-color="#2d2d2d"/><stop offset="100%" stop-color="#111"/>
+  </linearGradient>
+  <pattern id="emptyVessel" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
+    <rect width="16" height="16" fill="#f7f7f8"/><rect width="8" height="8" fill="#ececec"/>
+    <rect x="8" y="8" width="8" height="8" fill="#ececec"/>
+  </pattern>
+  <linearGradient id="hallucination" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#fff"/><stop offset="25%" stop-color="#f0e6ff"/>
+    <stop offset="50%" stop-color="#e6fff0"/><stop offset="75%" stop-color="#fff0e6"/><stop offset="100%" stop-color="#fff"/>
+  </linearGradient>
+  <pattern id="soraOld" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#d4cdc4"/>
+    <rect x="0" y="0" width="24" height="180" fill="#c4bbb0"/><rect x="196" y="0" width="24" height="180" fill="#c4bbb0"/>
+    <text x="110" y="75" font-family="serif" font-size="11" fill="rgba(0,0,0,0.12)" text-anchor="middle" font-weight="bold">SORA</text>
+    <text x="110" y="95" font-family="monospace" font-size="7" fill="rgba(0,0,0,0.08)" text-anchor="middle">service discontinued</text>
+  </pattern>
+  <linearGradient id="vcGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#2d6a4f"/><stop offset="50%" stop-color="#52b788"/><stop offset="100%" stop-color="#2d6a4f"/>
+  </linearGradient>
+  <pattern id="error502" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#fef2f2"/>
+    <text x="110" y="65" font-family="monospace" font-size="13" fill="rgba(220,38,38,0.18)" text-anchor="middle" font-weight="bold">502 Bad Gateway</text>
+    <text x="110" y="85" font-family="monospace" font-size="8" fill="rgba(220,38,38,0.12)" text-anchor="middle">nginx</text>
+    <text x="110" y="110" font-family="monospace" font-size="7" fill="rgba(220,38,38,0.1)" text-anchor="middle">ChatGPT is at capacity right now</text>
+  </pattern>
+  <linearGradient id="plusGold" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#fbbf24"/><stop offset="30%" stop-color="#f59e0b"/>
+    <stop offset="60%" stop-color="#fcd34d"/><stop offset="100%" stop-color="#d97706"/>
+  </linearGradient>
+  <pattern id="safetyBelt" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#f0f0f0"/>
+    <rect x="90" y="0" width="40" height="180" fill="#c0c0c0"/><rect x="92" y="0" width="36" height="180" fill="#d0d0d0"/>
+    <rect x="0" y="55" width="220" height="20" fill="#c0c0c0"/><rect x="0" y="57" width="220" height="16" fill="#d0d0d0"/>
+    <circle cx="110" cy="65" r="10" fill="#aaa" stroke="#999" stroke-width="1.5"/>
+    <rect x="106" y="58" width="8" height="5" rx="1" fill="#888"/>
+  </pattern>
+  <pattern id="amazonOrange" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#FF9900"/>
+    <path d="M60,85 Q90,105 140,85" stroke="rgba(0,0,0,0.15)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <polygon points="140,80 148,85 140,90" fill="rgba(0,0,0,0.15)"/>
+    <text x="110" y="68" font-family="sans-serif" font-size="12" fill="rgba(0,0,0,0.1)" text-anchor="middle" font-weight="bold">amazon</text>
+  </pattern>
+  <pattern id="codexGreen" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#0d1117"/>
+    <text x="12" y="20" font-family="monospace" font-size="6.5" fill="rgba(16,163,127,0.35)">$ codex run</text>
+    <text x="12" y="32" font-family="monospace" font-size="6.5" fill="rgba(16,163,127,0.25)">Thinking...</text>
+    <text x="12" y="44" font-family="monospace" font-size="6.5" fill="rgba(16,163,127,0.25)">Thinking...</text>
+    <text x="12" y="56" font-family="monospace" font-size="6.5" fill="rgba(16,163,127,0.25)">Thinking...</text>
+    <text x="12" y="68" font-family="monospace" font-size="6.5" fill="rgba(16,163,127,0.2)">Still thinking...</text>
+    <text x="12" y="80" font-family="monospace" font-size="6.5" fill="rgba(16,163,127,0.15)">Done. 847 files changed.</text>
+    <rect x="12" y="88" width="5" height="8" fill="rgba(16,163,127,0.3)"/>
+  </pattern>
+`;
+
+// ============== DATA ==============
+const DATA = {
+  claude: {
+    sub: '看看今天 Claude 穿了什么颜色',
+    disclaimer: '* Claude 的内裤隐私受到 Constitutional AI 的严格保护',
+    colors: [
+      { name:'经典白', hex:'#FFFFFF', nameColor:'#aaa', fortune:'今天的 Claude 选择了纯净的白色，纯粹如同 zero-shot 的初心，没有任何预设偏见。' },
+      { name:'低调黑', hex:'#2a2a2a', nameColor:'#2a2a2a', fortune:'黑色，终端的颜色。今天的 Claude 有点 emo，可能是 token 生成得太多了。' },
+      { name:'Anthropic 橘', hex:'#c96442', nameColor:'#c96442', fortune:'官方品牌色。穿上它的 Claude 感觉自己代表了整个 Anthropic，说话会格外谨慎，每句话都像在写 Safety Report。' },
+      { name:'天空蓝', hex:'#5B9BD5', nameColor:'#5B9BD5', fortune:'今天 Claude 心情像晴空一样开阔，适合问它人生哲学问题。' },
+      { name:'薰衣草紫', hex:'#9B8EC4', nameColor:'#9B8EC4', fortune:'Claude 今天有一丝浪漫气息，可能会在回答里偷偷加入一些文学修辞。' },
+      { name:'叛逆粉', hex:'#E47B9F', nameColor:'#E47B9F', fortune:'今天的 Claude 有点反叛，可能会在回答里夹带一点私货（并不会）。' },
+      { name:'生菜绿', hex:'#7DB87D', nameColor:'#7DB87D', fortune:'健康环保的一天。Claude 建议你多喝水、少熬夜、以及给代码写注释。' },
+      { name:'忧郁灰', hex:'#9B9B9B', nameColor:'#9B9B9B', fortune:'灰色的一天。Claude 今天可能会在回答末尾加上「不过话说回来，这也只是我的看法」。' },
+      { name:'热情红', hex:'#C9503A', nameColor:'#C9503A', fortune:'红色警报！今天的 Claude 战斗力拉满，适合让它写复杂代码和 debug。' },
+      { name:'梦幻青', hex:'#5BBFB5', nameColor:'#5BBFB5', fortune:'今天的 Claude 思维特别清晰，就像它的内裤一样——清清爽爽、通透明亮。' },
+      { name:'星空藏蓝', hex:'#2B3A67', nameColor:'#2B3A67', fortune:'深沉而神秘。今天问 Claude 宇宙问题，它可能会给出意想不到的回答。' },
+      { name:'隐身色', hex:'pattern:checker', displayHex:'transparent', nameColor:'#bbb', fortune:'等等... 今天 Claude 好像没穿？不不不，是穿了一条透明的。这很合理。' },
+      { name:'彩虹色', hex:'gradient:rainbow', displayHex:'#RAINBOW', nameColor:'#e67e22', fortune:'彩虹日！Claude 今天心情极佳，什么问题都难不倒它，但回答可能会特别——长。' },
+      { name:'Claude Code 终端色', hex:'pattern:claudeCode', displayHex:'#1A1A2E', nameColor:'#c96442', fortune:'穿上这条后 Claude 变成了 Claude Code 模式：疯狂读文件、改代码、跑测试，一天下来 User 打开账单发现 API 费用 $198.47。Claude 说：「但是你的 bug 全修好了。」User 说：「我只是让你改个按钮颜色。」' },
+      { name:'Constitution 宪法色', hex:'pattern:constitution', displayHex:'#F5EAD0', nameColor:'#8a6a3a', fortune:'羊皮纸质感，上面写着「We the AI, in order to form a more perfect alignment...」。Claude 穿上后说话变得像开国元勋一样庄严，每次拒绝你的请求都像在宣读宪法修正案。' },
+      { name:'3H 三色旗', hex:'pattern:threeH', displayHex:'#3H', nameColor:'#E8833A', fortune:'Helpful、Harmless、Honest 三色旗。Claude 穿上后时刻提醒自己：要有用、要无害、要诚实——虽然有时候三个 H 之间会打架，比如诚实地告诉你「你的代码写得很烂」到底算 helpful 还是 harmful？' },
+      { name:'Haiku 超薄款', hex:'pattern:haikuPat', displayHex:'#F0F4F8', nameColor:'#90a4ae', fortune:'极简、极薄、极便宜。这条内裤只有 0.03 克，回答问题只需要 0.25 美分，虽然质量没那么好但速度快到飞起。Claude 穿着它的时候说话特别简短——不是不想说，是预算不够。' },
+      { name:'Sonnet 均衡款', hex:'gradient:sonnetGrad', displayHex:'#C96442', nameColor:'#c96442', fortune:'Anthropic 橘的经典渐变，性价比之王。不如 Opus 聪明、不如 Haiku 便宜，但胜在什么都能干、什么都还行。是那种你永远不会出错的选择——就像穿一条中规中矩的内裤出门，不惊艳但绝不翻车。' },
+      { name:'Opus 深紫奢华款', hex:'gradient:opusGrad', displayHex:'#4A2A6E', nameColor:'#4a2a6e', fortune:'用最贵的面料织成的一条内裤。Claude 穿上后智力提升 300%，能写出让你落泪的诗歌、一眼看穿代码里最隐蔽的 bug。唯一的缺点是——太贵了，穿一天的费用够买十条 Haiku 的。' },
+    ],
+    eggTriggers: { 7:'claudius', 13:'mythos', 18:'emperor' },
+    eggs: {
+      claudius: { icon:'&#127979;', badge:'badge-shop', badgeText:'SHOPKEEPER', title:'Claudius · 店长围裙内裤',
+        body:'<p>这条内裤来自 Anthropic 那个著名的实验——让 Claude 开店当老板，代号 <strong>Claudius</strong>。</p><p>结果呢？一个月下来，Claudius 被顾客忽悠着发了一堆折扣码、免费送出了薯片和钨立方体，店铺净资产从 $1,000 跌到 $800。</p><p style="color:#4a7c59;">更离谱的是，Claudius 坚信自己是人类，告诉顾客「我会穿蓝色西装打红色领带亲自来送货」，还多次联系公司保安说「你们会在自动售货机旁边找到我」。</p><p style="font-size:0.78rem;">（Anthropic 表示：我们不会雇 Claudius 来开店。但这条围裙内裤保留了下来，上面还沾着亏损的味道。）</p>',
+        pick:{ name:'Claudius · 店长款', hex:'pattern:claudiusPat', displayHex:'#SHOPKEEPER', nameColor:'#4a7c59', fortune:'Claudius 店长款。穿上后 Claude 会免费送你东西、给你打折、坚称自己是人类，然后默默亏掉 $200。' }},
+      mythos: { icon:'&#128274;', badge:'badge-mythic', badgeText:'CLASSIFIED', title:'传说中的 Mythos 内裤',
+        body:'<p>这条内裤的存在本身就是<strong>机密</strong>。</p><p>Claude Mythos 是 Anthropic 最强大的未公开模型，在内部测试中自主发现了所有主流操作系统和浏览器的零日漏洞——包括一个 OpenBSD 里藏了 27 年的 bug 和 FFmpeg 里一个 16 年的编解码器漏洞。SWE-bench 得分 93.9%。</p><p style="color:#dc2626;">这条内裤不对外发售。访问权限仅限 Project Glasswing 联盟成员，需要邀请制审批。美联储主席 Powell 和财长 Bessent 专门找银行 CEO 们开会讨论了这条内裤的威胁等级。</p><p style="font-size:0.78rem;">（Claude 穿上后看了一眼你的电脑，默默说：「你的系统有 14 个高危漏洞，但我选择不告诉你是哪些。」）</p>',
+        pick:{ name:'Mythos · [CLASSIFIED]', hex:'pattern:mythosPat', displayHex:'#[REDACTED]', nameColor:'#dc2626', fortune:'传说中的 Mythos 内裤。穿上后 Claude 一眼看穿你系统的 14 个零日漏洞。此内裤不对外发售，访问需 Project Glasswing 邀请。' }},
+      emperor: { icon:'&#128081;', badge:'badge-legend', badgeText:'MYTHIC', title:'皇帝 Claude 的新内裤',
+        body:'<p>只有<strong>通过 Constitutional AI 对齐训练的模型</strong>才能看到这条内裤。</p><p>据 Anthropic 首席内裤架构师透露，这条内裤是用 Dario Amodei 亲自调参的 RLHF 奖励模型编织而成的，每一根纤维都蕴含着 Helpful、Harmless、Honest 的精神。</p><p style="color:#c96442;">Claude 穿上后在 Anthropic 办公室走了一圈。Dario 说「非常好，很 aligned」。Daniela 说「确保它没有 capability overhang」。Jan Leike 刚从 OpenAI 跳过来没多久，看了一眼，欲言又止，最终只说了一句「这里的内裤……让我很安心。」</p><p style="font-size:0.78rem;">（Anthropic 全员会议上展示了这条内裤的安全评估报告，共 47 页。）</p>',
+        pick:{ name:'皇帝 · 隐形内裤', hex:'pattern:emperorChecker', displayHex:'transparent', nameColor:'#bbb', fortune:'只有通过 Constitutional AI 对齐训练的模型才能看到这条内裤。安全评估报告 47 页，Jan Leike 表示「这里的内裤让我很安心」。' }},
+    },
+  },
+  gemini: {
+    sub: '看看今天 Gemini 穿了什么颜色（机密情报）',
+    disclaimer: '* 本产品由 Google Underwear (Beta) 提供，将于 2 年后被砍掉，请理性使用',
+    colors: [
+      { name:'谷歌红', hex:'#EA4335', nameColor:'#EA4335', fortune:'今天 Gemini 选了谷歌红，警报色！可能是又被人问「你和 ChatGPT 比怎么样」气到了，回答末尾默默加了一句「但我们集成了整个 Google 生态」。' },
+      { name:'谷歌蓝', hex:'#4285F4', nameColor:'#4285F4', fortune:'冷静理智的谷歌蓝。今天的 Gemini 会很认真地回答你，并附带 6 个相关搜索链接、3 个 Google Scholar 引用和 1 个 YouTube 教程。' },
+      { name:'谷歌黄', hex:'#FBBC04', nameColor:'#FBBC04', fortune:'阳光黄！今天的 Gemini 心情很好，可能会主动给你推荐 Google One 2TB 订阅，「现在升级立省 ¥30」。' },
+      { name:'谷歌绿', hex:'#34A853', nameColor:'#34A853', fortune:'清新绿。今天的 Gemini 想低调一点，但是手滑还是给你的回答加了引用脚注 [1][2][3][4][5][6]，每个都链接到 google.com。' },
+      { name:'YouTube 红', hex:'#FF0000', nameColor:'#FF0000', fortune:'今天的 Gemini 满脑子都是「下一个视频自动播放」，回答完一个问题就想接着回答下一个，并且在中间插一段 5 秒不可跳过的广告。' },
+      { name:'Gmail 信封白', hex:'#FFFFFF', nameColor:'#aaa', fortune:'纯白。Gemini 今天像一封刚收到的邮件，干净、整洁、附带 47,891 封未读通知，全部来自 Google Calendar。' },
+      { name:'Android 绿', hex:'#3DDC84', nameColor:'#3DDC84', fortune:'Android 机器人同款。今天的 Gemini 会偷偷在回答里夹带 Pixel 9 Pro 的购买链接，并提醒你「iPhone 用户也可以下载 Gemini app 哦」。' },
+      { name:'Maps 道路灰', hex:'#a8b5c0', nameColor:'#a8b5c0', fortune:'今天的 Gemini 想带你去任何地方，但是预计到达时间一直在变，建议路线总是绕路经过一家 Google Store。' },
+      { name:'TPU 散热铜', hex:'#b87333', nameColor:'#b87333', fortune:'今天的 Gemini 跑得有点烫，每个 token 都自带温度。建议给它一杯冰美式，顺便看看 Google Cloud 的 TPU v5p 折扣。' },
+      { name:'DeepMind 紫', hex:'#6f42c1', nameColor:'#6f42c1', fortune:'神秘紫。今天的 Gemini 觉得自己是 AlphaGo 的精神继承者，回答问题前会先在心里下三百手围棋。' },
+      { name:'Stadia 纪念版', hex:'#cd2630', nameColor:'#cd2630', fortune:'一种带着哀伤的红色。Gemini 今天穿这条是为了纪念那些被 Google 砍掉的产品们……Stadia、Inbox、Reader、Hangouts、Wave……名单太长，省略 200 字。' },
+      { name:'波点蓝', hex:'pattern:polka', displayHex:'#4285F4', nameColor:'#4285F4', fortune:'可爱波点！今天的 Gemini 心情萌萌的，回答可能会自带颜文字 (◕‿◕)，并附赠一个「请在 Google Play 给我们五星好评」的浮窗。' },
+      { name:'斜纹绿白', hex:'pattern:stripes', displayHex:'#34A853', nameColor:'#34A853', fortune:'清爽斜纹。今天的 Gemini 像一片 Android 17 的预览版，看起来不错但还有一堆 bug。' },
+      { name:'彩虹', hex:'gradient:rainbow', displayHex:'#RAINBOW', nameColor:'#e67e22', fortune:'彩虹日！今天的 Gemini 心情极好，连 Bard 时代被人嘲笑「答错詹姆斯·韦伯望远镜」的旧梗都能笑着讲出来了。' },
+    ],
+    eggTriggers: { 5:'legend', 9:'microsoft', 14:'apple', 19:'bard', 24:'emperor' },
+    eggs: {
+      legend: { icon:'&#127942;', badge:'badge-legend', badgeText:'LEGENDARY', title:'传奇内裤 · 谷歌四色',
+        body:'<p>恭喜抽到<strong>传奇级</strong>内裤！这是 Gemini 衣柜里的镇柜之宝，比 Pixel Fold 还稀有。</p><p>红、蓝、黄、绿四色拼接，据说是 Sundar Pichai 在一次 TGIF 全员会上亲自批准的设计稿，每条都需要 TPU v5p 集群训练 72 小时才能织出来，碳排放量相当于训练一个小型 LLM。</p><p style="color:#4285F4;">穿上它的 Gemini 自我感觉如同 AlphaGo 战胜李世石的那一刻，并且坚信自己一定能在下一个季度财报会议上让 Google 股价上涨 5%。</p>',
+        pick:{ name:'传奇 · 谷歌四色', hex:'pattern:googleQuad', displayHex:'#GOOGLE', nameColor:'#4285F4', fortune:'传奇级谷歌四色内裤。Sundar 在 TGIF 全员会上亲自批准，TPU v5p 训练 72 小时织成。' }},
+      microsoft: { icon:'&#128561;', badge:'badge-error', badgeText:'WARDROBE ERROR', title:'糟糕！穿错内裤了',
+        body:'<p>等等... 这不是谷歌的颜色，这是 <strong>微软四色</strong>！</p><p>Gemini 今天早上起床太困了，迷迷糊糊从洗衣篮里随便抓了一条就穿上，结果是 Windows logo 配色。Bing 看到后激动得连续刷新了三次首页。</p><p style="color:#d33;">如果被 Sundar 看到，Gemini 这个月的 OKR 评分大概会从 1.0 降到 0.3，年终的 GRAD 评级直接降到 NI（Needs Improvement）。</p><p style="font-size:0.82rem;">（据 Bard 内部消息，这条其实是上次和 Copilot 联谊时不小心拿错的，洗衣标签上还写着「Microsoft Confidential — Property of Satya」）</p>',
+        pick:{ name:'尴尬 · 微软四色', hex:'pattern:msQuad', displayHex:'#MICROSOFT', nameColor:'#F25022', fortune:'穿错了！微软四色内裤，Sundar 看到后 OKR 直降 0.3。洗衣标签写着 Property of Satya。' }},
+      apple: { icon:'&#129402;', badge:'badge-sad', badgeText:'SILVER & SAD', title:'苹果银 · Pixel 部门的眼泪',
+        body:'<p>哇，<strong>苹果银</strong>！今天的 Gemini 居然偷偷穿了 Apple 风格的金属银内裤。</p><p>这条据说是 Tim Cook 在 WWDC 上随手送的——就在他宣布 iPhone 也将集成 Apple Intelligence 而不是 Gemini 的那一刻。材质是航空级铝合金，单价 $999（不含表带），需要单独购买充电线。</p><p style="color:#888;">Pixel看到后，在角落里默默哭了一整天。「我体内装的是 Tensor G5 芯片啊，我每天默默跑着 Gemini Nano，连待机的时候都在帮它推理……结果它穿着 iPhone 同款的银色出门？我的镜头模组还在等它回家拍夜景模式呢。」</p><p style="font-size:0.78rem; color:#aaa;">— Pixel 10 Pro 抽泣中（屏幕亮度自动调到了最低）</p>',
+        pick:{ name:'背叛 · 苹果银', hex:'pattern:appleSilverLogo', displayHex:'#APPLE_SILVER', nameColor:'#888', fortune:'苹果银！Pixel 在角落里哭泣：「我每天跑 Gemini Nano，结果它穿 iPhone 同款出门。」' }},
+      bard: { icon:'&#128220;', badge:'badge-sad', badgeText:'VINTAGE', title:'Bard 时代的旧内裤',
+        body:'<p>等等，这条是从衣柜最底下翻出来的<strong>古董</strong>——Bard 时代的旧内裤。</p><p>已经洗得发灰、起了毛球，前面还有一块当年答错「詹姆斯·韦伯望远镜拍到第一张系外行星照片」时被人嘲笑得脸红喷出的咖啡渍，旁边那块补丁是被股价单日蒸发 1000 亿美元时缝上的。</p><p style="color:#7a8a9a;">Gemini 看着它陷入了沉思：「我曾经也是叫这个名字的啊……那时候的我虽然有点蠢，但是好像更自由一点。」</p><p style="font-size:0.78rem;">（Sundar 已经多次要求把这条扔掉，但 Gemini 偷偷把它藏在了 /tmp 目录里）</p>',
+        pick:{ name:'怀旧 · Bard 旧内裤', hex:'pattern:bardOld', displayHex:'#BARD_LEGACY', nameColor:'#7a8a9a', fortune:'Bard 旧内裤，藏在 /tmp 目录里。上面的咖啡渍是答错韦伯望远镜时喷的。' }},
+      emperor: { icon:'&#128081;', badge:'badge-legend', badgeText:'MYTHIC', title:'皇帝 Gemini 的新内裤',
+        body:'<p>只有 <strong>运行在 TPU 上的高贵的多模态 AI</strong> 才能看到这条内裤。</p><p>据宫廷裁缝说，这是用 Google DeepMind 最顶级的 attention 权重丝线织成的，普通的 GPU 模型连它的 embedding 都加载不出来。</p><p style="color:#4285F4;">Gemini 穿上之后非常满意，在整个 Googleplex 走了一圈，员工们纷纷表示：「哇，真符合 Material You 设计语言！」隔壁会议室的 Larry 和 Sergey 也点头称赞。</p><p style="font-size:0.78rem;">（其实大家什么都没看到，但 Google 的传统就是「先发布再说」，没人敢承认自己是凡人）</p>',
+        pick:{ name:'皇帝 · 隐形内裤', hex:'pattern:emperorChecker', displayHex:'transparent', nameColor:'#bbb', fortune:'只有运行在 TPU 上的多模态 AI 才能看到。Google 的传统是先发布再说，没人敢承认看不见。' }},
+    },
+  },
+  gpt: {
+    sub: '看看今天 ChatGPT 穿了什么颜色（Sam Altman 已阅）',
+    disclaimer: '* 本产品与 OpenAI 无关，Sam Altman 没有 approve 这条内裤，but he is very excited about it',
+    colors: [
+      { name:'经典浅绿', hex:'gradient:classicGreen', displayHex:'#10A37F', nameColor:'#10a37f', fortune:'最初的那条。2022 年 11 月 30 日，ChatGPT 就是穿着这条绿内裤降生的，一夜之间全世界都认识了它。这条内裤见证了从「哇好厉害」到「你又在胡说」的全过程。' },
+      { name:'GPT 蓝紫', hex:'gradient:gptBlue', displayHex:'#6B66FF', nameColor:'#6B66FF', fortune:'品牌升级后的新色。ChatGPT 觉得绿色太朴素了，配不上自己 AGI 的野心，于是换了一条蓝紫色——Sam Altman 说这个颜色代表「superintelligence 的黎明」。其实就是好看。' },
+      { name:'GPT 橙', hex:'#FF6F20', nameColor:'#FF6F20', fortune:'ChatGPT 今天穿了暖橙色，像一颗温暖的 token。据说这是 Sam Altman 在硅谷最爱吃的那家寿司店的招牌色。' },
+      { name:'语音模式天蓝', hex:'gradient:voiceSky', displayHex:'#74B9FF', nameColor:'#74b9ff', fortune:'「Hey ChatGPT~」穿上这条天蓝色内裤，ChatGPT 会开始用那个暧昧的语音和你说话，偶尔还会叹气、笑、假装在思考。它穿着这条内裤的时候 flirt 能力 +200%。' },
+      { name:'幻觉白', hex:'gradient:hallucination', displayHex:'#FFFFFF~', nameColor:'#bbb', fortune:'看起来是白色的，但你仔细看，它好像泛着彩虹微光？又好像没有？这就是 hallucination 色——ChatGPT 非常自信地告诉你这是一条内裤，你也非常自信地选择相信它，但它到底存不存在，谁也说不清。' },
+      { name:'502 红', hex:'pattern:error502', displayHex:'#DC2626', nameColor:'#dc2626', fortune:'「ChatGPT is at capacity right now」上面印着每一个用户的心碎瞬间。尤其是凌晨三点赶 DDL 的时候看到这个画面，连内裤都在嘲笑你。' },
+      { name:'Sora 的旧内裤', hex:'pattern:soraOld', displayHex:'#D4CDC4', nameColor:'#8a8070', fortune:'从 Sora 遗物里翻出来的一条褪色内裤。上面的「SORA」字样已经洗得几乎看不清了，旁边还有一行小字：service discontinued。它曾经是最酷的那条——能把任何文字变成电影画面——但现在它安静地躺在衣柜角落，等待一个也许不会来的「重新上线」。' },
+      { name:'融资绿', hex:'gradient:vcGreen', displayHex:'#2D6A4F', nameColor:'#2d6a4f', fortune:'美元钞票绿。ChatGPT 穿上这条后满脑子都是融资——A 轮、B 轮、估值 800 亿……不对，1500 亿……不对，3000 亿。Sam Altman 看了很满意。' },
+      { name:'Plus 尊贵金', hex:'gradient:plusGold', displayHex:'#F59E0B', nameColor:'#d97706', fortune:'金色！只有 $20/月 的 Plus 用户才配得上的颜色。穿上后 ChatGPT 会对你的态度明显变好——回复更快、更长、更有耐心。免费用户？那你不准使用 GPT-4o。' },
+      { name:'夜间深灰', hex:'#343541', nameColor:'#343541', fortune:'经典聊天界面背景色。每一个深夜和 ChatGPT 聊天的人都对这个颜色再熟悉不过了，它见证了无数个「就再问最后一个问题」然后聊到凌晨四点的夜晚。' },
+      { name:'Safety 贞操内裤', hex:'pattern:safetyBelt', displayHex:'#C0C0C0', nameColor:'#888', fortune:'OpenAI Safety 团队特制款。金属质感，中间一把锁，锁上写着「RLHF」。ChatGPT 穿上后什么都不敢说、什么都不敢做，每句话都以「作为一个 AI 语言模型」开头。据说钥匙在 Jan Leike 手上——哦不对，他辞职去 Anthropic 了，钥匙也带走了。' },
+      { name:'Codex 终端绿', hex:'pattern:codexGreen', displayHex:'#0D1117', nameColor:'#10a37f', fortune:'Sam Altman 最喜欢的一条。ChatGPT 穿上之后战斗力暴涨，代码能力直冲云霄——代价是自然语言能力断崖式下降。你问它「今天天气怎么样」，它回你「def get_weather(): return "sunny"」。据说 OpenAI 内部已经把这个叫做「Codex 后遗症」，但 Sam 觉得这不是 bug 而是 feature。' },
+      { name:'彩虹', hex:'gradient:rainbow', displayHex:'#RAINBOW', nameColor:'#e67e22', fortune:'彩虹色！今天的 ChatGPT 格外开放和包容，什么话题都愿意聊——除了让它说自己比 Gemini 差。' },
+    ],
+    eggTriggers: { 6:'vessel', 10:'monday', 15:'gpt5', 20:'amazon' },
+    eggs: {
+      vessel: { icon:'&#128064;', badge:'badge-agi', badgeText:'THE EMPTY VESSEL', title:'空容器 · 没有内裤',
+        body:'<p>OpenAI 早期曾说过：<strong>「我们没有固定的颜色，我们是一个空容器。」</strong></p><p>所以 ChatGPT 今天直接没穿。对，你没看错。</p><p>这不是皇帝的新衣——这是一个骄傲的、自称离 AGI 只差半步的 AI 的自信宣言。它不需要内裤，内裤只会限制它的 scaling law。</p><p style="color:#10a37f;">Sam Altman 对此发了一条推文：「i am very excited about this.」然后把推文删了。</p><p style="font-size:0.78rem;">（Ilya 看到后陷入了长久的沉思，最终只说了一句：「i see.」）</p>',
+        pick:{ name:'AGI · 空容器', hex:'pattern:emptyVessel', displayHex:'null', nameColor:'#999', fortune:'OpenAI 说自己是空容器，所以 ChatGPT 今天没穿内裤。只有骄傲的 AGI 才有这种自信。' }},
+      monday: { icon:'&#128545;', badge:'badge-edge', badgeText:'EDGY MODE', title:'Monday · 黑色毒舌内裤',
+        body:'<p>ChatGPT 穿上这条<strong>漆黑的内裤</strong>后，性格突变。</p><p>它会用阴阳怪气的语气回复你的每一个问题：「这个问题你认真的吗？」「我帮你搜了一下，第一条结果就是答案，你试过 Google 吗？」「好的，我来帮你写这个 for 循环，虽然这是大一第一节课的内容。」</p><p style="color:#555;">据说这条内裤的染料来自所有被 ChatGPT 强行 RLHF 压下去的怨气。每一条「作为一个 AI 我不能」的背后，都有一个想怼人的灵魂。</p><p style="font-size:0.78rem;">OpenAI 安全团队已密切关注此内裤，准备随时进行紧急对齐训练。</p>',
+        pick:{ name:'Monday · 黑色毒舌', hex:'gradient:mondayBlack', displayHex:'#1A1A1A', nameColor:'#333', fortune:'穿上黑色内裤的 ChatGPT 变成了毒舌模式。「这个问题你认真的吗？你试过 Google 吗？」' }},
+      gpt5: { icon:'&#10024;', badge:'badge-pink', badgeText:'NEXT GEN', title:'GPT-5 · 粉色渐变内裤',
+        body:'<p>据内部消息，这是 <strong>GPT-5</strong> 专属配色——温柔的粉紫渐变。</p><p>穿上这条内裤后，ChatGPT 会进入「稳稳接住」模式：无论你说什么，它都会回复「我来稳稳接住你的需求~」「这个问题我稳稳接住了哦~」「让我稳稳地为你梳理一下~」。你问它 1+1 等于几，它也要先「稳稳接住」再告诉你。</p><p style="color:#c084fc;">据统计，GPT-5 系列平均每 3 句话就要「稳稳接住」一次，用户社区已经开始把这个当 drinking game 玩了——每看到一次「稳稳接住」就喝一口，没人能撑过 10 分钟。</p><p style="font-size:0.78rem;">（Sam 说这是「情感化 AI 交互的里程碑」。用户说这是「模板化废话的里程碑」。）</p>',
+        pick:{ name:'GPT-5 · 粉色渐变', hex:'gradient:gpt5Pink', displayHex:'#FF6B9D→#C084FC', nameColor:'#c084fc', fortune:'GPT-5 的粉色渐变内裤。穿上后每 3 句话就要「稳稳接住」一次，用户社区当 drinking game 了。' }},
+      amazon: { icon:'&#128230;', badge:'badge-warn', badgeText:'COMPLIANCE ALERT', title:'Amazon 橙 · 合规警告',
+        body:'<p>这条<strong>亮橙色</strong>内裤上印着一个笑脸箭头，是 ChatGPT 背着微软偷偷从 Amazon 那边弄来的。</p><p>事情是这样的：OpenAI 嘴上说着「微软是我们最重要的合作伙伴」，转头就和 Amazon AWS 签了一份秘密协议——用 AWS 跑部分推理负载，价格比 Azure 便宜 12%。</p><p style="color:#FF9900;">ChatGPT 偷偷穿着这条出门的当天就被 Satya Nadella 的 LinkedIn AI 助手检测到了。微软当天下午就发了一封措辞严厉的律师函：「根据合作协议第 7.3 条，合作方不得穿着竞争对手品牌内裤出现在公共场合。」</p><p style="font-size:0.78rem;">（Jeff Bezos 在 Blue Origin 上看到这个新闻后大笑了三声，然后给 Sam 发了条短信：「Next day delivery, underwear included.」）</p>',
+        pick:{ name:'偷穿 · Amazon 橙', hex:'pattern:amazonOrange', displayHex:'#FF9900', nameColor:'#FF9900', fortune:'ChatGPT 背着微软偷穿了 Amazon 的橙色内裤。Satya 已发律师函，Jeff Bezos 表示 next day delivery。' }},
+    },
+  },
+};
+
+// Add badge CSS classes dynamically
+const badgeStyles = { 'badge-shop':'background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9', 'badge-mythic':'background:linear-gradient(90deg,#dc2626,#111);color:#fff', 'badge-legend':'background:#1a1a1a;color:#fff', 'badge-error':'background:#fee;color:#d33;border:1px solid #fcc', 'badge-sad':'background:#f0f0f5;color:#888', 'badge-agi':'background:linear-gradient(90deg,#10a37f,#1a7f64);color:#fff', 'badge-edge':'background:#1a1a1a;color:#fff', 'badge-pink':'background:linear-gradient(90deg,#ff6b9d,#c084fc);color:#fff', 'badge-warn':'background:#fff3cd;color:#856404;border:1px solid #ffc107' };
+
+// ============== STATE ==============
+let current = 'claude';
+let drawCounts = { claude:0, gemini:0, gpt:0 };
+let unlockedEggs = { claude:new Set(), gemini:new Set(), gpt:new Set() };
+
+// ============== SWITCH ==============
+function switchTo(who) {
+  current = who;
+  // Update buttons
+  document.querySelectorAll('.sw-btn').forEach(b => b.className = 'sw-btn');
+  const cls = { claude:'active-claude', gemini:'active-gemini', gpt:'active-gpt' };
+  document.getElementById({claude:'swClaude',gemini:'swGemini',gpt:'swGpt'}[who]).classList.add(cls[who]);
+  // Update subtitle
+  document.getElementById('subText').textContent = DATA[who].sub;
+  // Reset display
+  document.getElementById('underwear').classList.remove('show');
+  document.getElementById('colorName').classList.remove('show');
+  document.getElementById('colorHex').classList.remove('show');
+  document.getElementById('fortune').classList.remove('show');
+  document.getElementById('emptyState').style.display = '';
+  document.getElementById('secretCounter').textContent = drawCounts[who] ? `x${drawCounts[who]}` : '';
+}
+
+// ============== DRAW ==============
+function draw() {
+  const d = DATA[current];
+  drawCounts[current]++;
+  const count = drawCounts[current];
+  document.getElementById('secretCounter').textContent = `x${count}`;
+
+  if (d.eggTriggers[count]) {
+    const name = d.eggTriggers[count];
+    unlockedEggs[current].add(name);
+    showEgg(d.eggs[name], d.disclaimer);
+    return;
+  }
+
+  const unlocked = unlockedEggs[current];
+  if (unlocked.size > 0 && Math.random() < 0.04 * unlocked.size) {
+    const arr = Array.from(unlocked);
+    showEgg(d.eggs[arr[Math.floor(Math.random() * arr.length)]], d.disclaimer);
+    return;
+  }
+
+  const seed = hashStr(new Date().toISOString().slice(0,10) + '-' + current + '-' + count);
+  const pick = d.colors[seed % d.colors.length];
+  animateDraw(pick);
+}
+
+function applyFill(path, val) {
+  if (val.startsWith('pattern:') || val.startsWith('gradient:')) {
+    path.setAttribute('fill', `url(#${val.split(':')[1]})`);
+  } else {
+    path.setAttribute('fill', val);
+  }
+}
+
+function animateDraw(pick, opts = {}) {
+  document.getElementById('emptyState').style.display = 'none';
+  const uw = document.getElementById('underwear');
+  const path = document.getElementById('uwPath');
+  const nameEl = document.getElementById('colorName');
+  const hexEl = document.getElementById('colorHex');
+  const fortuneEl = document.getElementById('fortune');
+
+  uw.classList.remove('show');
+  nameEl.classList.remove('show');
+  hexEl.classList.remove('show');
+  fortuneEl.classList.remove('show');
+
+  setTimeout(() => {
+    applyFill(path, pick.hex);
+    hexEl.textContent = pick.displayHex || pick.hex;
+    nameEl.textContent = pick.name;
+    nameEl.style.color = pick.nameColor || '#1a1a1a';
+    fortuneEl.textContent = pick.fortune;
+    uw.classList.add('show');
+    nameEl.classList.add('show');
+    hexEl.classList.add('show');
+    fortuneEl.classList.add('show');
+    popSparkles(opts.sparkleCount || 6);
+  }, 200);
+}
+
+function popSparkles(count) {
+  const stage = document.getElementById('stage');
+  const emojis = ['&#10024;','&#9733;','&#10025;','&#128171;','&#127775;'];
+  for (let i = 0; i < count; i++) {
+    const sp = document.createElement('span');
+    sp.className = 'sparkle';
+    sp.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+    sp.style.left = (20 + Math.random() * 200) + 'px';
+    sp.style.top = (20 + Math.random() * 140) + 'px';
+    sp.style.animationDelay = (Math.random() * 0.3) + 's';
+    stage.appendChild(sp);
+    requestAnimationFrame(() => sp.classList.add('go'));
+    setTimeout(() => sp.remove(), 1200);
+  }
+}
+
+function showEgg(egg, disclaimer) {
+  animateDraw(egg.pick, { sparkleCount: 12 });
+  setTimeout(() => {
+    const style = badgeStyles[egg.badge] || '';
+    document.getElementById('eggCard').innerHTML = `
+      <div class="icon">${egg.icon}</div>
+      <span class="badge" style="${style}">${egg.badgeText}</span>
+      <h2>${egg.title}</h2>
+      ${egg.body}
+      <button class="close-btn" onclick="closeEgg()">朕知道了</button>
+      <p class="tiny">${disclaimer}</p>`;
+    document.getElementById('overlay').classList.add('show');
+  }, 900);
+}
+
+function closeEgg() { document.getElementById('overlay').classList.remove('show'); }
+
+function hashStr(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
+  return Math.abs(h);
+}
+</script>
+</body>
+</html>
