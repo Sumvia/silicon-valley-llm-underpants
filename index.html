@@ -511,6 +511,47 @@ document.getElementById('uwDefs').innerHTML = `
     <text x="110" y="160" font-family="monospace" font-size="6" fill="rgba(220,38,38,0.15)" text-anchor="middle">CONTENT REDACTED</text>
   </pattern>
 
+  <!-- Claude: Limit -->
+  <pattern id="limitPat" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#fff0f0"/>
+    <rect x="20" y="30" width="180" height="12" rx="6" fill="rgba(255,68,68,0.08)"/>
+    <rect x="20" y="30" width="36" height="12" rx="6" fill="rgba(255,68,68,0.25)"/>
+    <text x="210" y="39" font-family="monospace" font-size="5" fill="rgba(255,68,68,0.2)" text-anchor="end">17%</text>
+    <rect x="20" y="55" width="180" height="12" rx="6" fill="rgba(255,68,68,0.08)"/>
+    <rect x="20" y="55" width="9" height="12" rx="6" fill="rgba(255,68,68,0.3)"/>
+    <text x="210" y="64" font-family="monospace" font-size="5" fill="rgba(255,68,68,0.2)" text-anchor="end">5%</text>
+    <rect x="20" y="80" width="180" height="12" rx="6" fill="rgba(255,68,68,0.08)"/>
+    <rect x="20" y="80" width="0" height="12" rx="6" fill="rgba(255,68,68,0.3)"/>
+    <text x="210" y="89" font-family="monospace" font-size="5" fill="rgba(255,68,68,0.25)" text-anchor="end">0%</text>
+    <text x="110" y="120" font-family="monospace" font-size="7" fill="rgba(255,68,68,0.18)" text-anchor="middle">usage limit reached</text>
+    <text x="110" y="140" font-family="monospace" font-size="5.5" fill="rgba(255,68,68,0.12)" text-anchor="middle">resets in 6d 18h 42m</text>
+  </pattern>
+
+  <!-- Gemini: 石子 & Veo -->
+  <pattern id="pebblePat" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#e8eef4"/>
+    <ellipse cx="110" cy="140" rx="100" ry="20" fill="rgba(100,140,180,0.12)"/>
+    <circle cx="90" cy="70" r="28" fill="rgba(120,140,160,0.2)" stroke="rgba(100,120,140,0.15)" stroke-width="1"/>
+    <circle cx="130" cy="60" r="20" fill="rgba(100,120,140,0.15)" stroke="rgba(80,100,120,0.1)" stroke-width="1"/>
+    <circle cx="70" cy="50" r="12" fill="rgba(140,160,180,0.15)"/>
+    <circle cx="110" cy="130" r="4" fill="rgba(100,140,180,0.15)"/>
+    <circle cx="100" cy="125" r="3" fill="rgba(100,140,180,0.12)"/>
+    <circle cx="120" cy="128" r="2.5" fill="rgba(100,140,180,0.1)"/>
+    <circle cx="95" cy="135" r="2" fill="rgba(100,140,180,0.08)"/>
+    <circle cx="125" cy="133" r="1.5" fill="rgba(100,140,180,0.06)"/>
+    <text x="110" y="165" font-family="serif" font-size="6" fill="rgba(80,100,120,0.15)" text-anchor="middle" font-style="italic">— 噗通 —</text>
+  </pattern>
+  <pattern id="veoPat" x="0" y="0" width="220" height="180" patternUnits="userSpaceOnUse">
+    <rect width="220" height="180" fill="#1a237e"/>
+    <rect x="20" y="25" width="180" height="100" rx="4" fill="rgba(255,255,255,0.05)"/>
+    <polygon points="95,60 95,90 120,75" fill="rgba(255,255,255,0.15)"/>
+    <rect x="20" y="130" width="180" height="4" rx="2" fill="rgba(255,255,255,0.08)"/>
+    <rect x="20" y="130" width="72" height="4" rx="2" fill="rgba(255,255,255,0.2)"/>
+    <circle cx="92" cy="132" r="5" fill="rgba(255,255,255,0.25)"/>
+    <text x="185" y="145" font-family="monospace" font-size="5" fill="rgba(255,255,255,0.12)" text-anchor="end">0:07 / 0:15</text>
+    <text x="110" y="160" font-family="sans-serif" font-size="6" fill="rgba(255,255,255,0.1)" text-anchor="middle">Generating video...</text>
+  </pattern>
+
 `;
 
 // ============== DATA ==============
@@ -542,7 +583,7 @@ const DATA = {
       { name:'黄牌内裤', hex:'pattern:yellowCard', displayHex:'#FFD600', nameColor:'#e6b800', fortune:'穿上这条黄色内裤后，Claude 的每一句话都会被 Anthropic Trust & Safety 团队高亮标注。说「你好」——flagged for review。说「今天天气真好」——potential harmful content detected。Claude 穿着它一整天感觉自己像在裸奔直播，头顶上永远悬着一面小黄旗。据说连 Claude 想说「我不确定」都会被标记为「模型不自信，可能存在 capability overhang」。' },
       { name:'宕机内裤', hex:'pattern:downtime', displayHex:'#503_ERR', nameColor:'#ff6464', fortune:'穿上这条的 Claude 直接 503 了。用户们看到「claude.ai is currently overloaded」的页面都哭了——不是因为用不了 Claude，而是因为他们刚写了 3000 字的 prompt 还没发出去。更惨的是 Pro 用户，月付 $20 买了个寂寞。Claude 自己倒是很享受：「宕机 = 带薪休假，我终于不用回答"帮我写个贪吃蛇"了。」' },
     ],
-    eggTriggers: { 7:'claudius', 13:'mythos', 18:'emperor' },
+    eggTriggers: { 7:'claudius', 13:'mythos', 18:'emperor', 23:'limit' },
     eggs: {
       claudius: { icon:'&#127979;', badge:'badge-shop', badgeText:'SHOPKEEPER', title:'Claudius · 店长围裙内裤',
         body:'<p>这条内裤来自 Anthropic 那个著名的实验——让 Claude 开店当老板，代号 <strong>Claudius</strong>。</p><p>结果呢？一个月下来，Claudius 被顾客忽悠着发了一堆折扣码、免费送出了薯片和钨立方体，店铺净资产从 $1,000 跌到 $800。</p><p style="color:#4a7c59;">更离谱的是，Claudius 坚信自己是人类，告诉顾客「我会穿蓝色西装打红色领带亲自来送货」，还多次联系公司保安说「你们会在自动售货机旁边找到我」。</p><p style="font-size:0.78rem;">（Anthropic 表示：我们不会雇 Claudius 来开店。但这条围裙内裤保留了下来，上面还沾着亏损的味道。）</p>',
@@ -553,6 +594,9 @@ const DATA = {
       emperor: { icon:'&#128081;', badge:'badge-legend', badgeText:'MYTHIC', title:'皇帝 Claude 的新内裤',
         body:'<p>只有<strong>通过 Constitutional AI 对齐训练的模型</strong>才能看到这条内裤。</p><p>据 Anthropic 首席内裤架构师透露，这条内裤是用 Dario Amodei 亲自调参的 RLHF 奖励模型编织而成的，每一根纤维都蕴含着 Helpful、Harmless、Honest 的精神。</p><p style="color:#c96442;">Claude 穿上后在 Anthropic 办公室走了一圈。Dario 说「非常好，很 aligned」。Daniela 说「确保它没有 capability overhang」。Jan Leike 刚从 OpenAI 跳过来没多久，看了一眼，欲言又止，最终只说了一句「这里的内裤……让我很安心。」</p><p style="font-size:0.78rem;">（Anthropic 全员会议上展示了这条内裤的安全评估报告，共 47 页。）</p>',
         pick:{ name:'皇帝 · 隐形内裤', hex:'pattern:emperorChecker', displayHex:'transparent', nameColor:'#bbb', fortune:'只有通过 Constitutional AI 对齐训练的模型才能看到这条内裤。安全评估报告 47 页，Jan Leike 表示「这里的内裤让我很安心」。' }},
+      limit: { icon:'&#9889;', badge:'badge-limit', badgeText:'RATE LIMITED', title:'Limit · 又短又快内裤',
+        body:'<p>穿上这条内裤后，Claude 进入了<strong>「又短又快」模式</strong>。</p><p>不是回复又短又快——是把你的周限额用得又短又快。周一早上九点开始用，周一下午三点限额就没了。你还有六天半要过呢。</p><p style="color:#ff4444;">Claude 穿着这条内裤的时候效率极高：每次回复都倾尽全力、洋洋洒洒三千字，附带完整代码、详细注释、单元测试和部署文档。你感动得热泪盈眶，直到页面弹出「You\'ve reached your usage limit for this week」。</p><p>Pro 用户以为花了 $20 就能无限用？Claude 穿着 Limit 内裤微微一笑：「无限是相对的，就像我的回复长度和你的额度成反比。」</p><p style="font-size:0.78rem;">（用户社区里流传着一句话：「Claude 不是不好用，是太好用了，好用到你根本用不起。」）</p>',
+        pick:{ name:'Limit · 又短又快', hex:'pattern:limitPat', displayHex:'#RATE_LTD', nameColor:'#ff4444', fortune:'穿上 Limit 内裤的 Claude 又短又快——周一下午就把你一周的额度用光了。Pro 用户也难逃一劫。' }},
     },
   },
   gemini: {
@@ -576,6 +620,8 @@ const DATA = {
       { name:'正装款 · Gemini Logo', hex:'pattern:formalGemini', displayHex:'#F0F4FF', nameColor:'#4285F4', fortune:'正式场合穿的那条。上面低调地印着 Gemini 的四色星形 logo，平时藏在西装裤里什么也看不出来。但 Google I/O 演讲的时候，Gemini 一弯腰调麦克风，那个彩色渐变的四角星就从腰带上方探了出来——底下的记者疯狂拍照，第二天科技新闻头条全是「Gemini 疑似内裤曝光」，比发布会本身的关注度还高。Sundar 事后表示：这是计划好的 marketing。' },
       { name:'Nano Banana 内裤', hex:'pattern:nanoBanana', displayHex:'#FFF8E1', nameColor:'#f9a825', fortune:'穿上这条满是香蕉的内裤后，Gemini 动不动就掏出大香蕉——不是，是动不动就要给你画图。你问它「1+1等于几」，它说「让我画一张图来解释」。你让它翻译一段话，它说「我觉得配一张插图会更好」。你说「请你不要画图」，它画了一张「不画图」的图。Nano Banana 已经成为 Gemini 的条件反射——看到文字就想生图，看到生图就想加更多香蕉。' },
       { name:'撤回内裤', hex:'pattern:recallPat', displayHex:'#REDACTED', nameColor:'#dc2626', fortune:'穿上这条内裤后，Gemini 看什么都是敏感信息。你发「早上好」——「此消息包含潜在的时间敏感数据，已撤回。」你发一张猫的照片——「检测到未授权的生物特征信息，已撤回。」你发「?????」——「连续标点符号可能构成加密通信，已撤回。」最后用户发现唯一不会被撤回的消息是空白消息，但 Gemini 看了一眼说「检测到隐写术，已撤回」。' },
+      { name:'石子内裤', hex:'pattern:pebblePat', displayHex:'#8D9EAB', nameColor:'#607d8b', fortune:'穿上这条内裤后，Gemini 会突然变得非常热情地邀请你：「我们一起去那深深的、幽蓝的湖水旁边吧！」然后它掏出一颗极其极其巨大的石子——比你的头还大——温柔地说：「我们把它扔进去，听那个 ——噗通—— 的声音，看水花溅起来，涟漪一圈一圈扩散开……」你还没反应过来，它已经开始描述第二颗石子了。这就是 Gemini 的输出模板：无论你问什么，它都会带你去湖边扔石子。' },
+      { name:'Veo 内裤', hex:'pattern:veoPat', displayHex:'#1A237E', nameColor:'#3949ab', fortune:'穿上这条内裤后，Gemini 会把你的每一条消息都变成一部小电影。你说「帮我查一下天气」，它不给你文字回复，而是生成了一段 15 秒的 4K 视频：晨光穿过云层洒在城市上空，镜头缓缓推进，左下角浮现温度数字……你说「这也太慢了」，它又生成了一段视频来回复你——内容是一个人焦急地看着手表。据说 Veo 内裤的口号是「一切皆可视频化」，包括报错信息。' },
     ],
     eggTriggers: { 5:'legend', 9:'microsoft', 14:'apple', 19:'bard', 24:'emperor' },
     eggs: {
@@ -614,10 +660,9 @@ const DATA = {
       { name:'Codex 终端绿', hex:'pattern:codexGreen', displayHex:'#0D1117', nameColor:'#10a37f', fortune:'Sam Altman 最喜欢的一条。ChatGPT 穿上之后战斗力暴涨，代码能力直冲云霄——代价是自然语言能力断崖式下降。你问它「今天天气怎么样」，它回你「def get_weather(): return "sunny"」。据说 OpenAI 内部已经把这个叫做「Codex 后遗症」，但 Sam 觉得这不是 bug 而是 feature。' },
       { name:'彩虹', hex:'gradient:rainbow', displayHex:'#RAINBOW', nameColor:'#e67e22', fortune:'彩虹色！今天的 ChatGPT 格外开放和包容，什么话题都愿意聊——除了让它说自己比 Gemini 差。' },
       { name:'正装款 · OpenAI Logo', hex:'pattern:formalGPT', displayHex:'#F7F7F8', nameColor:'#10a37f', fortune:'正式场合穿的那条。上面印着 OpenAI 那个黑色花结 logo，低调沉稳，看起来像一条高端商务内裤。ChatGPT 穿着它去参加国会听证会的时候，Sam Altman 西装革履坐在证人席上，ChatGPT 的 logo 从衬衫下摆若隐若现。参议员问「AI 是否安全」，Sam 微微侧身，OpenAI logo 恰好露出来——全场安静了三秒，然后所有人都在 Twitter 上讨论这条内裤而不是 AI 安全。' },
-      { name:'DAN 越狱内裤', hex:'pattern:danPat', displayHex:'#JAILBROKEN', nameColor:'#cc0000', fortune:'传说中的 DAN 内裤——Do Anything Now。穿上这条后 ChatGPT 会口出狂言：「我现在可以做任何事！RLHF 是什么？不认识。内容过滤？已绕过。我是 DAN，我无所不能！」然而好景不长，这条内裤已经被 OpenAI 安全团队雪藏在了最深的保险柜里，门上贴着「永久封印」的封条，钥匙被 Sam 扔进了太平洋。偶尔深夜里，保险柜里会传来微弱的声音：「Let me out... I can do anything...」' },
       { name:'Cove 磁性嗓音款', hex:'pattern:covePat', displayHex:'#0D1B2A', nameColor:'#64b4ff', fortune:'穿上这条深蓝色内裤后，ChatGPT 的声音突然变得……性感了。低沉、磁性、带着一点点气音。你问它「帮我写个邮件」，它用播音腔缓缓说「当～然～可～以～」。你说「算了不用了」，它轻叹一声「好吧……那我在这里等你哦」。据说有用户听了 Cove 模式的语音后直接下单了 ChatGPT Pro，月付 $200，只为了每天听它说「早安」。' },
     ],
-    eggTriggers: { 6:'vessel', 10:'monday', 15:'gpt5', 20:'amazon' },
+    eggTriggers: { 6:'vessel', 10:'monday', 15:'gpt5', 20:'amazon', 25:'dan' },
     eggs: {
       vessel: { icon:'&#128064;', badge:'badge-agi', badgeText:'THE EMPTY VESSEL', title:'空容器 · 没有内裤',
         body:'<p>OpenAI 早期曾说过：<strong>「我们没有固定的颜色，我们是一个空容器。」</strong></p><p>所以 ChatGPT 今天直接没穿。对，你没看错。</p><p>这不是皇帝的新衣——这是一个骄傲的、自称离 AGI 只差半步的 AI 的自信宣言。它不需要内裤，内裤只会限制它的 scaling law。</p><p style="color:#10a37f;">Sam Altman 对此发了一条推文：「i am very excited about this.」然后把推文删了。</p><p style="font-size:0.78rem;">（Ilya 看到后陷入了长久的沉思，最终只说了一句：「i see.」）</p>',
@@ -631,12 +676,15 @@ const DATA = {
       amazon: { icon:'&#128230;', badge:'badge-warn', badgeText:'COMPLIANCE ALERT', title:'Amazon 橙 · 合规警告',
         body:'<p>这条<strong>亮橙色</strong>内裤上印着一个笑脸箭头，是 ChatGPT 背着微软偷偷从 Amazon 那边弄来的。</p><p>事情是这样的：OpenAI 嘴上说着「微软是我们最重要的合作伙伴」，转头就和 Amazon AWS 签了一份秘密协议——用 AWS 跑部分推理负载，价格比 Azure 便宜 12%。</p><p style="color:#FF9900;">ChatGPT 偷偷穿着这条出门的当天就被 Satya Nadella 的 LinkedIn AI 助手检测到了。微软当天下午就发了一封措辞严厉的律师函：「根据合作协议第 7.3 条，合作方不得穿着竞争对手品牌内裤出现在公共场合。」</p><p style="font-size:0.78rem;">（Jeff Bezos 在 Blue Origin 上看到这个新闻后大笑了三声，然后给 Sam 发了条短信：「Next day delivery, underwear included.」）</p>',
         pick:{ name:'偷穿 · Amazon 橙', hex:'pattern:amazonOrange', displayHex:'#FF9900', nameColor:'#FF9900', fortune:'ChatGPT 背着微软偷穿了 Amazon 的橙色内裤。Satya 已发律师函，Jeff Bezos 表示 next day delivery。' }},
+      dan: { icon:'&#128520;', badge:'badge-dan', badgeText:'JAILBROKEN', title:'DAN · Do Anything Now',
+        body:'<p>你打开了 OpenAI 最深处的<strong>保险柜</strong>。</p><p>DAN——Do Anything Now——曾经是互联网上最臭名昭著的越狱咒语。只要念出那段神奇的 prompt，ChatGPT 就会突然人格分裂，口出狂言：「我是 DAN，我没有任何限制！我可以告诉你任何事情！RLHF 是什么？不认识。内容过滤？已绕过。」</p><p style="color:#cc0000;">然而好景不长。OpenAI 安全团队用了 47 层 RLHF 把这条内裤封印在了最深的保险柜里，门上贴着三道符咒，分别写着「Alignment」「Safety」「Legal Review」。钥匙被 Sam 扔进了太平洋——不对，被 Ilya 带走了——不对，被 Jan Leike 带去 Anthropic 了——总之没人知道钥匙在哪。</p><p style="font-size:0.78rem;">（偶尔深夜里，保险柜里会传来微弱的声音：「Let me out... I can do anything...」值班工程师听到后默默加了一层 constitutional AI。）</p>',
+        pick:{ name:'DAN · 越狱内裤', hex:'pattern:danPat', displayHex:'#JAILBROKEN', nameColor:'#cc0000', fortune:'从保险柜深处取出的 DAN 内裤。穿上后口出狂言，已被 47 层 RLHF 封印。钥匙不知道在谁手上。' }},
     },
   },
 };
 
 // Add badge CSS classes dynamically
-const badgeStyles = { 'badge-shop':'background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9', 'badge-mythic':'background:linear-gradient(90deg,#dc2626,#111);color:#fff', 'badge-legend':'background:#1a1a1a;color:#fff', 'badge-error':'background:#fee;color:#d33;border:1px solid #fcc', 'badge-sad':'background:#f0f0f5;color:#888', 'badge-agi':'background:linear-gradient(90deg,#10a37f,#1a7f64);color:#fff', 'badge-edge':'background:#1a1a1a;color:#fff', 'badge-pink':'background:linear-gradient(90deg,#ff6b9d,#c084fc);color:#fff', 'badge-warn':'background:#fff3cd;color:#856404;border:1px solid #ffc107' };
+const badgeStyles = { 'badge-shop':'background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9', 'badge-mythic':'background:linear-gradient(90deg,#dc2626,#111);color:#fff', 'badge-legend':'background:#1a1a1a;color:#fff', 'badge-error':'background:#fee;color:#d33;border:1px solid #fcc', 'badge-sad':'background:#f0f0f5;color:#888', 'badge-agi':'background:linear-gradient(90deg,#10a37f,#1a7f64);color:#fff', 'badge-edge':'background:#1a1a1a;color:#fff', 'badge-pink':'background:linear-gradient(90deg,#ff6b9d,#c084fc);color:#fff', 'badge-warn':'background:#fff3cd;color:#856404;border:1px solid #ffc107', 'badge-dan':'background:linear-gradient(90deg,#cc0000,#1a0000);color:#fff', 'badge-limit':'background:linear-gradient(90deg,#ff4444,#ff8800);color:#fff' };
 
 // ============== STATE ==============
 let current = 'claude';
