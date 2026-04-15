@@ -24,7 +24,23 @@
     margin: 0 auto 12px;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
   }
+
+  .guide-btn {
+    padding: 7px 16px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 100px;
+    cursor: pointer;
+    background: #fff;
+    color: #b5aa9e;
+    transition: all 0.25s ease;
+  }
+  .guide-btn:hover { color: #1a1a1a; border-color: rgba(0,0,0,0.2); }
 
   .switcher {
     display: flex;
@@ -171,6 +187,53 @@
   .close-btn:hover { background: #1a1a1a; color: #fff; }
   .tiny { font-size: 0.7rem; color: #ccc; margin-top: 12px; font-style: italic; }
 
+  /* Guide overlay */
+  .guide-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px); z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  .guide-overlay.show { opacity: 1; pointer-events: auto; }
+
+  .guide-card {
+    background: #fff; border-radius: 20px; padding: 32px 30px;
+    max-width: 420px; width: 90%;
+    max-height: 75vh; overflow-y: auto;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.15);
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .guide-overlay.show .guide-card { transform: translateY(0) scale(1); }
+
+  .guide-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; margin-bottom: 16px; text-align: center;
+  }
+
+  .guide-section { margin-bottom: 16px; }
+  .guide-section-title {
+    font-size: 0.7rem; color: #b5aa9e; text-transform: uppercase;
+    letter-spacing: 2px; margin-bottom: 8px; padding-bottom: 4px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .guide-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 0; font-size: 0.82rem; color: #666;
+  }
+  .guide-item .swatch {
+    width: 14px; height: 14px; border-radius: 4px;
+    border: 1px solid rgba(0,0,0,0.08); flex-shrink: 0;
+  }
+  .guide-item.drawn { color: #1a1a1a; font-weight: 500; }
+  .guide-item.undrawn { opacity: 0.45; }
+  .guide-count {
+    text-align: center; font-size: 0.75rem; color: #b5aa9e;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+
   .badge {
     display: inline-block; padding: 3px 12px; border-radius: 100px;
     font-size: 0.7rem; font-weight: 600; letter-spacing: 1px;
@@ -197,6 +260,7 @@
     <button class="sw-btn" id="swGemini" onclick="switchTo('gemini')">Gemini</button>
     <button class="sw-btn" id="swGpt" onclick="switchTo('gpt')">ChatGPT</button>
   </div>
+  <button class="guide-btn" onclick="openGuide()">图鉴</button>
 </div>
 
 <div class="header">
@@ -233,6 +297,10 @@
 
 <div class="overlay" id="overlay">
   <div class="egg-card" id="eggCard"></div>
+</div>
+
+<div class="guide-overlay" id="guideOverlay" onclick="if(event.target===this)closeGuide()">
+  <div class="guide-card" id="guideCard"></div>
 </div>
 
 <script>
@@ -689,18 +757,28 @@ const badgeStyles = { 'badge-shop':'background:#e8f5e9;color:#2e7d32;border:1px 
 // ============== STATE ==============
 let current = 'claude';
 let drawCounts = { claude:0, gemini:0, gpt:0 };
-let unlockedEggs = { claude:new Set(), gemini:new Set(), gpt:new Set() };
+let drawnItems = { claude:new Set(), gemini:new Set(), gpt:new Set() };
+
+// Build combined pools at init: regular colors + egg picks
+const POOLS = {};
+const EGG_LOOKUP = {};
+for (const [who, d] of Object.entries(DATA)) {
+  POOLS[who] = [...d.colors];
+  EGG_LOOKUP[who] = {};
+  for (const [name, egg] of Object.entries(d.eggs)) {
+    const item = { ...egg.pick, _egg: name };
+    POOLS[who].push(item);
+    EGG_LOOKUP[who][egg.pick.name] = { eggName: name, egg };
+  }
+}
 
 // ============== SWITCH ==============
 function switchTo(who) {
   current = who;
-  // Update buttons
   document.querySelectorAll('.sw-btn').forEach(b => b.className = 'sw-btn');
   const cls = { claude:'active-claude', gemini:'active-gemini', gpt:'active-gpt' };
   document.getElementById({claude:'swClaude',gemini:'swGemini',gpt:'swGpt'}[who]).classList.add(cls[who]);
-  // Update subtitle
   document.getElementById('subText').textContent = DATA[who].sub;
-  // Reset display
   document.getElementById('underwear').classList.remove('show');
   document.getElementById('colorName').classList.remove('show');
   document.getElementById('colorHex').classList.remove('show');
@@ -712,27 +790,20 @@ function switchTo(who) {
 // ============== DRAW ==============
 function draw() {
   const d = DATA[current];
+  const pool = POOLS[current];
   drawCounts[current]++;
-  const count = drawCounts[current];
-  document.getElementById('secretCounter').textContent = `x${count}`;
+  document.getElementById('secretCounter').textContent = `x${drawCounts[current]}`;
 
-  if (d.eggTriggers[count]) {
-    const name = d.eggTriggers[count];
-    unlockedEggs[current].add(name);
-    showEgg(d.eggs[name], d.disclaimer);
-    return;
+  // Equal probability random pick from combined pool
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  drawnItems[current].add(pick.name);
+
+  if (pick._egg) {
+    // It's an easter egg item
+    showEgg(d.eggs[pick._egg], d.disclaimer);
+  } else {
+    animateDraw(pick);
   }
-
-  const unlocked = unlockedEggs[current];
-  if (unlocked.size > 0 && Math.random() < 0.04 * unlocked.size) {
-    const arr = Array.from(unlocked);
-    showEgg(d.eggs[arr[Math.floor(Math.random() * arr.length)]], d.disclaimer);
-    return;
-  }
-
-  const seed = hashStr(new Date().toISOString().slice(0,10) + '-' + current + '-' + count);
-  const pick = d.colors[seed % d.colors.length];
-  animateDraw(pick);
 }
 
 function applyFill(path, val) {
@@ -802,6 +873,47 @@ function showEgg(egg, disclaimer) {
 }
 
 function closeEgg() { document.getElementById('overlay').classList.remove('show'); }
+
+function openGuide() {
+  const d = DATA[current];
+  const pool = POOLS[current];
+  const drawn = drawnItems[current];
+  const labels = { claude:'Claude', gemini:'Gemini', gpt:'ChatGPT' };
+
+  // Split into regular and special
+  const regulars = d.colors;
+  const specials = Object.values(d.eggs).map(e => e.pick);
+
+  let html = `<h2>${labels[current]} 内裤图鉴</h2>`;
+
+  // Regular section
+  html += `<div class="guide-section"><div class="guide-section-title">常规款 · ${regulars.length}</div>`;
+  for (const c of regulars) {
+    const isDone = drawn.has(c.name);
+    const bg = c.hex.startsWith('pattern:') || c.hex.startsWith('gradient:') ? '#ddd' : c.hex;
+    html += `<div class="guide-item ${isDone ? 'drawn' : 'undrawn'}"><span class="swatch" style="background:${bg}"></span>${isDone ? '' : ''}${c.name}</div>`;
+  }
+  html += '</div>';
+
+  // Special section
+  html += `<div class="guide-section"><div class="guide-section-title">隐藏款 · ${specials.length}</div>`;
+  for (const c of specials) {
+    const isDone = drawn.has(c.name);
+    const bg = c.hex.startsWith('pattern:') || c.hex.startsWith('gradient:') ? '#ddd' : c.hex;
+    html += `<div class="guide-item ${isDone ? 'drawn' : 'undrawn'}"><span class="swatch" style="background:${bg}"></span>${isDone ? c.name : '???'}</div>`;
+  }
+  html += '</div>';
+
+  const total = pool.length;
+  const got = drawn.size;
+  html += `<div class="guide-count">已收集 ${got} / ${total}</div>`;
+  html += `<button class="close-btn" onclick="closeGuide()" style="display:block;margin:16px auto 0">关闭</button>`;
+
+  document.getElementById('guideCard').innerHTML = html;
+  document.getElementById('guideOverlay').classList.add('show');
+}
+
+function closeGuide() { document.getElementById('guideOverlay').classList.remove('show'); }
 
 function hashStr(str) {
   let h = 0;
